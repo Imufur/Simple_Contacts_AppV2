@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Simple Contacts App 2</string>
+    <string-array name="contacts_array">
+        <item>All</item>
+        <item>Name</item>
+        <item>Phone</item>
+
+    </string-array>
+</resources>
