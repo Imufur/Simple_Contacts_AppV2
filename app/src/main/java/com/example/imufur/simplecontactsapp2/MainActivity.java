@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -38,6 +39,32 @@ public class MainActivity extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         spinner.setAdapter(adapter_spinner);
+
+
+        //apagar contatos
+       listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+           @Override
+           public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+               //codigo executado quando cica item da lista
+
+               ListView listView = (ListView) findViewById(R.id.listView_contacts);
+
+               String item = (String) listView.getItemAtPosition(position);
+
+
+               contacts.remove(position);
+
+               ArrayAdapter<String> adapter = new ArrayAdapter<String>(MainActivity.this,//mostrar lista atualizada
+                       android.R.layout.simple_list_item_1, contacts);
+
+               listView.setAdapter(adapter);
+
+               Toast.makeText(MainActivity.this, "apagou o contacto " + item, Toast.LENGTH_SHORT).show();
+
+
+
+           }
+       });
 
 
     }
