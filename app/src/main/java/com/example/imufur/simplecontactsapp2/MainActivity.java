@@ -1,6 +1,7 @@
 package com.example.imufur.simplecontactsapp2;
 
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,8 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<String> contacts;
@@ -22,9 +25,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        contacts = new ArrayList<String>();
-        contacts.add("grgreg | 975456456");
-        contacts.add("qwwertyy | 12345674");
+
+
+        //restaura contactos
+//        contacts = new ArrayList<String>();
+//        contacts.add("grgreg | 975456456");
+//        contacts.add("qwwertyy | 12345674");
+
+        SharedPreferences sp = getSharedPreferences("contactsApp", 0);
+        Set<String> contactsset = sp.getStringSet("contactskey", new HashSet<String>());//devolve vazio se nao encontrar nada
+
+        contacts = new ArrayList<String>(contactsset);
+
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, contacts);
         ListView listView = (ListView) findViewById(R.id.listView_contacts);
@@ -41,11 +53,26 @@ public class MainActivity extends AppCompatActivity {
         spinner.setAdapter(adapter_spinner);
 
 
-        //apagar contatos
+        //apagar contatos <---------------
        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
            @Override
            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                //codigo executado quando cica item da lista
+
+
+               /*AlertDialog.Builder adb=new AlertDialog.Builder(MainActivity.this);
+               adb.setTitle("Delete?");
+               adb.setMessage("Are you sure you want to delete " + position);
+               final int positionToRemove = position;
+               adb.setNegativeButton("Cancel", null);
+               adb.setPositiveButton("Ok", new AlertDialog.OnClickListener() {
+                   public void onClick(DialogInterface dialog, int which) {
+                       contacts.remove(positionToRemove);
+                       adapter.notifyDataSetChanged();
+                   }});
+               adb.show();
+           }
+       });*/
 
                ListView listView = (ListView) findViewById(R.id.listView_contacts);
 
@@ -62,11 +89,29 @@ public class MainActivity extends AppCompatActivity {
                Toast.makeText(MainActivity.this, "apagou o contacto " + item, Toast.LENGTH_SHORT).show();
 
 
-
            }
        });
 
 
+
+    }
+
+                                                                                                      //metodo on stop
+
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+                                                                                    //guarder os contactos para as shared preferences
+        SharedPreferences sp = getSharedPreferences("contactsApp", 0);//nome tme se ser o mesmo do on create, 0 é modo privado
+        SharedPreferences.Editor editor = sp.edit();
+        HashSet contactsset = new HashSet(contacts);
+
+        editor.putStringSet("contactskey", contactsset);
+           editor.commit();
+
+        Toast.makeText(MainActivity.this, "A guardar dados", Toast.LENGTH_SHORT).show();
     }
 
     public void onClick_search(View view) {
