@@ -11,11 +11,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,8 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         contacts = new ArrayList<String>(contactsset);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, contacts);
+     SimpleAdapter adapter = createSimpleAdapter(contacts); //cria adapter dos icons, mudar em todos os adapters
         ListView listView = (ListView) findViewById(R.id.listView_contacts);
         listView.setAdapter(adapter);
 
@@ -54,10 +56,10 @@ public class MainActivity extends AppCompatActivity {
 
 
         //apagar contatos <---------------
-       listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+       listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
            @Override
-           public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-               //codigo executado quando cica item da lista
+           public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+               //codigo executado quando clica item da lista
 
 
                /*AlertDialog.Builder adb=new AlertDialog.Builder(MainActivity.this);
@@ -89,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                Toast.makeText(MainActivity.this, "apagou o contacto " + item, Toast.LENGTH_SHORT).show();
 
 
+               return true;
            }
        });
 
@@ -125,8 +128,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (termo.equals("")) { // se o termo a pesquisar for uma string vazia
             // mostra os contactos todos
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                    this, android.R.layout.simple_list_item_1, contacts);
+            SimpleAdapter adapter = createSimpleAdapter(contacts);
             lv.setAdapter(adapter);
 
             Toast.makeText(MainActivity.this, "Showing all contacts.", Toast.LENGTH_SHORT).show();
@@ -182,8 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (vazia == false) {
                 // mostrar na listview a lista nova que contém o resultado da pesquisa
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(
-                        this, android.R.layout.simple_list_item_1, resultados);
+                SimpleAdapter adapter = createSimpleAdapter(resultados);
                 lv.setAdapter(adapter);
 
                 // mostrar uma mensagem a dizer que a pesquisa teve sucesso
@@ -262,5 +263,24 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog dialog = builder.create();
         dialog.show();
     }
+      //liga o layout com icons
+    private SimpleAdapter createSimpleAdapter(ArrayList<String> contacts) {
+        List<HashMap<String, String>> simpleAdapterData = new ArrayList<HashMap<String, String>>();
 
+        for (String c : contacts) {
+            HashMap<String, String> hashMap = new HashMap<>();
+
+            String[] split = c.split(" \\| ");
+
+            hashMap.put("name", split[0]);
+            hashMap.put("phone", split[1]);
+
+            simpleAdapterData.add(hashMap);
+        }
+
+        String[] from = {"name", "phone"};  //phone vai para textview_phone e name vai para textview_name
+        int[] to = {R.id.textView_name, R.id.textView_phone};
+        SimpleAdapter simpleAdapter = new SimpleAdapter(getBaseContext(), simpleAdapterData, R.layout.listview_item, from, to);
+        return simpleAdapter;
+    }
 }
